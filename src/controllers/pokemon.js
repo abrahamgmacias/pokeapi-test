@@ -1,9 +1,10 @@
 import fetch from "node-fetch";
 
-async function getAllPokemons() {
+// Query pokemons by range
+export async function getMultiplePokemons(offset = 0, limit = 20) {
     let pokemonData;
     try {
-        const response = await fetch("https://pokeapi.co/api/v2/pokemon");
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`);
         pokemonData = await response.json();
 
     } catch (error) {
@@ -11,9 +12,27 @@ async function getAllPokemons() {
         return { successful: false, error: "Unable to fetch data from pokeAPI." };
     }
 
-    return { successful: true, pokemonData };
+    // Simplify data object
+    const finalPokemonObject = {};
+    pokemonData["results"].forEach((data) => {
+        finalPokemonObject[data["name"]] = data["url"];
+    });
+
+    return { successful: true, finalPokemonObject };
 }
 
-getAllPokemons();
+// Gap at 905, after 1000 => 10000
+// Query pokemon by id
+export async function getSinglePokemon(id) {
+    let pokemonData;
+    try {
+        const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
+        pokemonData = await response.json();
 
-// module.exports = { getAllPokemons }
+    } catch (error) {
+        console.log(error);
+        return { successful: false, error: `Unable to fetch data from pokeAPI under id: ${id}.` };
+    }
+
+    return { successful: true, pokemonData };
+}

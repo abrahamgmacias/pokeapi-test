@@ -1,5 +1,5 @@
 import express from "express";
-import { getMultiplePokemons } from "../controllers/pokemon";
+import { getMultiplePokemons, getSinglePokemon } from "../controllers/pokemon";
 
 const router = express();
 
@@ -34,8 +34,22 @@ router.get("/pokemons", async (req, res) => {
 
 // Query a single pokemon
 router.get("/pokemons/:id", async (req, res) => {
+    const { id } = req.params;
 
+    // Validations
+    if (isNaN(id) || parseInt(id) < 0) {
+        return res.status(400).json({ message: "Invalid id. Must be an integer bigger than 0." });
+    }
 
+    // Call the API
+    const pokemonDataObject = await getSinglePokemon(id);
+    if (!pokemonDataObject.successful) {
+        return res.status(400).json({ message: pokemonDataObject.error });
+    }
+
+    // Extract values
+    const { pokemonData } = pokemonDataObject;
+    return res.status(200).send(pokemonData);
 });
 
 export default router;
