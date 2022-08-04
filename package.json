@@ -6,14 +6,22 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "node --experimental-specifier-resolution=node src/server.js",
-    "start": "nodemon --experimental-specifier-resolution=node src/server.js"
+    "start": "nodemon --experimental-specifier-resolution=node src/server.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "undo-migrate": "npx sequelize-cli db:migrate:undo:all"
   },
   "keywords": [],
   "author": "abrahamgmacias",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.1",
+    "install": "^0.13.0",
     "node-fetch": "^2.6.1",
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "npm": "^8.16.0",
+    "pg": "^8.7.3",
+    "pg-hstore": "^2.3.4",
+    "sequelize": "^6.21.3",
+    "sequelize-cli": "^6.4.1"
   }
 }
