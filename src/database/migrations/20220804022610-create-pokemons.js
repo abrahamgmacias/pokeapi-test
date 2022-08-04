@@ -9,14 +9,19 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      pk_id: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        unique: true
+      },
       name: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: true
       },
       url: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
         unique: true
       },
       createdAt: {
