@@ -2,7 +2,6 @@
   "name": "pokeapi",
   "version": "1.0.0",
   "description": "An REST API for simplifying queries to the PokeAPI.",
-  "type": "module",
   "main": "src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -10,11 +9,11 @@
     "start": "nodemon --experimental-specifier-resolution=node src/server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "abrahamgmacias",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.1",
-    "node-fetch": "^3.2.10",
+    "node-fetch": "^2.6.1",
     "nodemon": "^2.0.19"
   }
 }
