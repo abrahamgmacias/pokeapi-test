@@ -1,5 +1,5 @@
-import express from "express";
-import { getMultiplePokemons, getSinglePokemon } from "../controllers/pokemon";
+const express = require("express");
+const { getMultiplePokemons, getSinglePokemon } = require("../controllers/pokemon")
 
 const router = express();
 
@@ -52,4 +52,4 @@ router.get("/pokemons/:id", async (req, res) => {
     return res.status(200).send(pokemonData);
 });
 
-export default router;
+module.exports = router;

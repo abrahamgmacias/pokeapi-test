@@ -1,7 +1,7 @@
-import fetch from "node-fetch";
+const fetch = require("node-fetch");
 
 // Query pokemons by range
-export async function getMultiplePokemons(offset = 0, limit = 20) {
+async function getMultiplePokemons(offset = 0, limit = 20) {
     let pokemonData;
     try {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`);
@@ -23,7 +23,7 @@ export async function getMultiplePokemons(offset = 0, limit = 20) {
 
 // Gap at 905, after 1000 => 10000
 // Query pokemon by id
-export async function getSinglePokemon(id) {
+async function getSinglePokemon(id) {
     let pokemonData;
     try {
         const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${id}`);
@@ -36,3 +36,5 @@ export async function getSinglePokemon(id) {
 
     return { successful: true, pokemonData };
 }
+
+module.exports = { getMultiplePokemons, getSinglePokemon };

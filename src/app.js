@@ -1,5 +1,5 @@
-import express from "express";
-import pokemonRouter from "./routes/pokemon";
+const express = require("express");
+const pokemonRouter = require("./routes/pokemon");
 
 const app = express();
 
@@ -13,4 +13,4 @@ app.get("/", async (req, res) => {
 
 app.use("/", pokemonRouter);
 
-export default app;
+module.exports = app;
