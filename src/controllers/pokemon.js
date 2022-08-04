@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+const { Op } = require("sequelize");
 const pokemons = require('../database/models').pokemons
 
 // Query pokemons by range
@@ -13,16 +14,15 @@ async function getMultiplePokemons(offset = 0, limit = 20) {
         return { successful: false, error: "Unable to fetch data from pokeAPI." };
     }
 
-    // Simplify data object
-    const finalPokemonObject = {};
-    pokemonData["results"].forEach((data) => {
-        finalPokemonObject[data["name"]] = data["url"];
+    // Add pk_id property...
+    pokemonData["results"].forEach((pokemon) => {
+        const id = pokemon["url"].split("/")[6];
+        pokemon["pk_id"] = parseInt(id);
     });
 
-    return { successful: true, finalPokemonObject };
+    return { successful: true, pokemonData: pokemonData["results"] };
 }
 
-// Gap at 905, after 1000 => 10000
 // Query pokemon by id
 async function getSinglePokemon(id) {
     let pokemonData;
@@ -38,8 +38,54 @@ async function getSinglePokemon(id) {
     return { successful: true, pokemonData };
 }
 
-async function getDBPokemons() {
-    return await pokemons.findAll();
+async function getDBPokemons(offset = 0, limit = 20) {
+    let pokemonDBData;
+    try {
+        pokemonDBData = await pokemons.findAll({
+            attributes: ["pk_id", "name", "url"],
+            where: {
+                pk_id: {
+                    [Op.gte]: offset,
+                    [Op.lte]: offset + limit
+                }
+            },
+            order: [['pk_id', 'ASC']],
+            raw: true
+        });
+
+        if (pokemonDBData.length < limit) {
+            return { successful: true, pokemonDBData: [] };
+        }
+
+    } catch (error) {
+        return { successful: false, error: "Query error." };
+    }
+
+    return { successful: true, pokemonDBData };
 }
 
-module.exports = { getMultiplePokemons, getSinglePokemon, getDBPokemons };
+async function insertDBPokemons(pokemonData) {
+    // Simplify insert
+    try {
+        const status = await pokemons.bulkCreate(pokemonData, {
+            ignoreDuplicates: true
+        });
+
+    } catch (error) {
+        console.log(error);
+        return { successful: false, error: "Insert error at pokemons table." };
+    }
+
+    return { successful: true };
+}
+
+async function cleanPokemonData(pokemonData) {
+    const finalPokemonObject = {};
+    pokemonData.forEach((data) => {
+        finalPokemonObject[data["name"]] = data["url"];
+    });
+
+    return finalPokemonObject;
+}
+
+module.exports = { getMultiplePokemons, getSinglePokemon, getDBPokemons, insertDBPokemons, cleanPokemonData };

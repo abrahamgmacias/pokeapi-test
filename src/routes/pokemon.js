@@ -1,5 +1,5 @@
 const express = require("express");
-const { getMultiplePokemons, getSinglePokemon, getDBPokemons } = require("../controllers/pokemon")
+const { getMultiplePokemons, getSinglePokemon, getDBPokemons, insertDBPokemons, cleanPokemonData } = require("../controllers/pokemon")
 
 const router = express();
 
@@ -21,15 +21,35 @@ router.get("/pokemons", async (req, res) => {
         }
     }
 
-    // Call the API
-    const pokemonDataObject = await getMultiplePokemons(offset, limit);
-    if (!pokemonDataObject.successful) {
-        return res.status(400).json({ message: pokemonDataObject.error });
+    // Check the DB first...
+    const dbPokemonObject = await getDBPokemons(offset, limit);
+    if (!dbPokemonObject.successful) {
+        return res.status(400).json({ message: dbPokemonObject.error });
     }
 
-    // Extract values
-    const { finalPokemonObject } = pokemonDataObject;
-    return res.status(200).send(finalPokemonObject);
+    // If empty, call the API
+    if (dbPokemonObject["pokemonDBData"].length === 0) {
+        const pokemonDataObject = await getMultiplePokemons(offset, limit);
+        if (!pokemonDataObject.successful) {
+            return res.status(400).json({ message: pokemonDataObject.error });
+        }
+
+        // Save to database
+        const { pokemonData } = pokemonDataObject;
+        const pokemonInsertObject = await insertDBPokemons(pokemonData);
+        if (!pokemonInsertObject.successful) {
+            return res.status(400).json({ message: pokemonInsertObject.error });
+        }
+
+        const cleanerData = await cleanPokemonData(pokemonData);
+        return res.status(200).send(cleanerData);
+    }
+
+    // Extract data and simplify data object
+    const { pokemonDBData } = dbPokemonObject;
+    const cleanerData = await cleanPokemonData(pokemonDBData);
+
+    return res.status(200).send(cleanerData);
 });
 
 // Query a single pokemon
