@@ -1,5 +1,5 @@
 const express = require("express");
-const { getMultiplePokemons, getSinglePokemon } = require("../controllers/pokemon")
+const { getMultiplePokemons, getSinglePokemon, getDBPokemons } = require("../controllers/pokemon")
 
 const router = express();
 

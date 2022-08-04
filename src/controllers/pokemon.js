@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+const pokemons = require('../database/models').pokemons
 
 // Query pokemons by range
 async function getMultiplePokemons(offset = 0, limit = 20) {
@@ -37,4 +38,8 @@ async function getSinglePokemon(id) {
     return { successful: true, pokemonData };
 }
 
-module.exports = { getMultiplePokemons, getSinglePokemon };
+async function getDBPokemons() {
+    return await pokemons.findAll();
+}
+
+module.exports = { getMultiplePokemons, getSinglePokemon, getDBPokemons };
